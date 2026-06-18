@@ -1,16 +1,17 @@
 const mysql = require('mysql2');
 
-
-// Pool create karna better hota hai kyunki ye connections ko reuse karta hai
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',         
-    password: '34254367', 
-    database: 'chat_app',  
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: false 
+    }
 });
 
-// .promise() use kar rahe hain taaki aage hum async/await use kar sakein
 module.exports = pool.promise();
