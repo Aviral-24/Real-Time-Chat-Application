@@ -5,7 +5,7 @@ const mysql = require('mysql2');
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',         
-    password: 'Aviral@2026',  // Apna MySQL password daalo
+    password: '34254367', 
     database: 'chat_app',  
     waitForConnections: true,
     connectionLimit: 10,
