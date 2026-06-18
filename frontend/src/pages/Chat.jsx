@@ -17,7 +17,7 @@ const Chat = () => {
     useEffect(() => {
         if (!user) return;
 
-        socketRef.current = io('http://localhost:5000');
+        socketRef.current = io('https://real-time-chat-application-i39j.onrender.com');
         socketRef.current.emit('user_connected', user.id);
 
         socketRef.current.on('receive_private_message', (data) => {
