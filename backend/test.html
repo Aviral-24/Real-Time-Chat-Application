@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket Test Client</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        ul { background: #f9f9f9; padding: 10px; list-style: none; min-height: 100px; }
+        li { margin-bottom: 5px; padding: 5px; background: #e1f5fe; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h2>Chat Backend Tester ⚡</h2>
+
+    <div class="box">
+        <h3>1. Khud ko Online Karo</h3>
+        <label>Mera User ID (Database wala): </label>
+        <input type="number" id="myId" placeholder="e.g., 1">
+        <button onclick="connectUser()">Online Jao</button>
+    </div>
+
+    <div class="box">
+        <h3>2. Message Bhejo</h3>
+        <label>Kisko Bhejna Hai (Receiver ID): </label>
+        <input type="number" id="receiverId" placeholder="e.g., 2"><br><br>
+        <label>Message: </label>
+        <input type="text" id="msgBox" placeholder="Kuch type karo...">
+        <button onclick="sendMessage()">Send Message</button>
+    </div>
+
+    <div class="box">
+        <h3>Live Chat History</h3>
+        <ul id="messages"></ul>
+    </div>
+
+    <script>
+        // Backend se WebSocket connection open karna
+        const socket = io("http://localhost:5000");
+
+        socket.on("connect", () => {
+            console.log("Connected to server! Socket ID:", socket.id);
+        });
+
+        // Backend ko batana ki kaunsa User ID online aaya hai
+        function connectUser() {
+            const myId = document.getElementById("myId").value;
+            if(!myId) return alert("Pehle User ID dalo!");
+            
+            socket.emit("user_connected", parseInt(myId));
+            alert("Success: User " + myId + " is now online!");
+        }
+
+        // Backend ko message bhejna
+        function sendMessage() {
+            const myId = document.getElementById("myId").value;
+            const receiverId = document.getElementById("receiverId").value;
+            const msg = document.getElementById("msgBox").value;
+
+            if(!myId || !receiverId || !msg) return alert("Saari fields fill karo!");
+
+            // Event emit karna (socketManager.js isko pakdega)
+            socket.emit("send_private_message", {
+                senderId: parseInt(myId),
+                receiverId: parseInt(receiverId),
+                message: msg
+            });
+
+            // Apni screen par message dikhana
+            document.getElementById("messages").innerHTML += "<li style='background: #c8e6c9;'><b>Main:</b> " + msg + "</li>";
+            document.getElementById("msgBox").value = ""; // Input clear karna
+        }
+
+        // Backend se aane wale messages ko sunna (listen karna)
+        socket.on("receive_private_message", (data) => {
+            console.log("New message received:", data);
+            document.getElementById("messages").innerHTML += "<li><b>User " + data.senderId + ":</b> " + data.message + "</li>";
+        });
+    </script>
+</body>
+</html>
