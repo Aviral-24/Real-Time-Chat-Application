@@ -21,6 +21,10 @@ const io = new Server(server, {
 app.use(cors()); 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Chat App Backend is running perfectly! 🚀');
+});
+
 app.use('/api/auth', authRoutes);
 
 socketManager(io);
